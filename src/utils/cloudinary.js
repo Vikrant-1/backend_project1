@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, } from 'cloudinary';
 import fs from 'fs';
 
 cloudinary.config({
@@ -26,9 +26,29 @@ const uploadOnCloudinary = async (localFilePath) => {
 
 }
 
-export {uploadOnCloudinary};
+const deleteOnCloudinary = async (oldFileURL) => {
+    try {
+        if (!oldFileURL) return null;
+        // upload file on cloudnary
 
+        const publicId = getPublicId(oldFileURL);
+        console.log(oldFileURL, publicId);
+        if (!publicId) {
+            return null;
+        }
+        const response = await cloudinary.uploader.destroy(publicId);
 
-// cloudinary.uploader.upload("https://upload.wikimedia.org/wikipedia/commons/a/ae/Olympic_flag.jpg",
-//   { public_id: "olympic_flag" }, 
-//   function(error, result) {console.log(result); });
+        console.log("file is delete on cloudinary", response);
+        return response;
+    } catch (error) {
+        return null;
+    }
+
+}
+
+const getPublicId = (url = '') => {
+    const id = url.split('/').pop().split('.')[0];
+    return id;
+}
+
+export { uploadOnCloudinary, deleteOnCloudinary };
