@@ -14,6 +14,8 @@ const uploadOnCloudinary = async (localFilePath) => {
 
         const response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: 'auto',
+            media_metadata:true,
+            image_metadata:true,
         })
         // file have been uploaded successfully
         fs.unlinkSync(localFilePath);
@@ -32,7 +34,7 @@ const deleteOnCloudinary = async (oldFileURL) => {
         // upload file on cloudnary
 
         const publicId = getPublicId(oldFileURL);
-        console.log(oldFileURL, publicId);
+        // console.log(oldFileURL, publicId);
         if (!publicId) {
             return null;
         }
