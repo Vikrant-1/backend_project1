@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Video } from "../models/video.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -55,8 +56,14 @@ const uploadVideo = asyncHandler(async (req, res) => {
 
 // publish video
 const publishVideo = asyncHandler(async (req, res) => {
-    const {videoId} = req.body;
+    const {videoId} = req.params;
     const video = await  getVideoById(videoId);
+    console.log(video,req.user._id)
+    const userId = req.user?._id;
+
+    if(!userId.equals(video?.owner)){
+        throw new ApiError(400,'Only Owner can update video');
+    }
     if(video.isPublished === true){
         res.status(200).json(new ApiResponse(200,video,"Video is already published"));
     }
@@ -66,8 +73,11 @@ const publishVideo = asyncHandler(async (req, res) => {
 });
 // unpublish video
 const unPublishVideo = asyncHandler(async (req, res) => {
-    const {videoId} = req.body;
+    const {videoId} = req.params;
     const video = await getVideoById(videoId);
+    // if(req.user._id !== video.owner){
+    //     throw new ApiError(400,'Only Owner can update video');
+    // }
     if(video.isPublished === false){
         res.status(200).json(new ApiResponse(200,video,"Video is already unPublished"));
     }
@@ -131,4 +141,4 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
 
 
-export { uploadVideo, publishVideo, unPublishVideo, updateThumbNail, updateVideo, handleViews, deleteVideo, updateVideoDetails };
+export { uploadVideo, publishVideo, unPublishVideo, updateThumbNail, handleViews, deleteVideo, updateVideoDetails };
